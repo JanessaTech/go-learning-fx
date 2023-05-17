@@ -2,24 +2,25 @@ package starter2
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net"
 	"net/http"
-	"os"
 
 	"go.uber.org/fx"
+	"go.uber.org/zap"
 )
 
-type EchoHandler struct{}
-
-func NewEchoHandler() *EchoHandler {
-	return &EchoHandler{}
+type EchoHandler struct {
+	log *zap.Logger
 }
 
-func (*EchoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func NewEchoHandler(log *zap.Logger) *EchoHandler {
+	return &EchoHandler{log: log}
+}
+
+func (h *EchoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if _, err := io.Copy(w, r.Body); err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to handle request:", err)
+		h.log.Warn("Failed to handle request", zap.Error(err))
 	}
 }
 
@@ -29,7 +30,7 @@ func NewServeMux(echo *EchoHandler) *http.ServeMux {
 	return mux
 }
 
-func NewHTTPServer(lc fx.Lifecycle, mux *http.ServeMux) *http.Server {
+func NewHTTPServer(lc fx.Lifecycle, mux *http.ServeMux, log *zap.Logger) *http.Server {
 	srv := &http.Server{Addr: ":8080", Handler: mux}
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
@@ -37,7 +38,8 @@ func NewHTTPServer(lc fx.Lifecycle, mux *http.ServeMux) *http.Server {
 			if err != nil {
 				return err
 			}
-			fmt.Println("Starting HTTP server at", srv.Addr)
+			log.Info("Starting HTTP server", zap.String("addr", srv.Addr))
+			//{"level":"info","msg":"Starting HTTP server","addr":":8080"}
 			go srv.Serve(ln)
 			return nil
 		},
@@ -53,6 +55,7 @@ func Main() {
 			NewHTTPServer,
 			NewServeMux,
 			NewEchoHandler,
+			zap.NewExample,
 		),
 		fx.Invoke(func(*http.Server) {}),
 	).Run()
