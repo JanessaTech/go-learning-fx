@@ -1,10 +1,11 @@
 package main
 
 import (
-	"hi-supergirl/go-learning-fx/starter2"
+	integratefxwithgin3 "hi-supergirl/go-learning-fx/IntegrateFxWithGin-3"
 )
 
 func main() {
 	//starter1.Main()
-	starter2.Main()
+	//starter2.Main()
+	integratefxwithgin3.Main()
 }
