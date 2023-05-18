@@ -10,7 +10,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func AddGroups(r *gin.Engine) {
+func addGroups(r *gin.Engine) {
 	api := r.Group("/api")
 	{
 		admin := api.Group("/admin")
@@ -34,7 +34,7 @@ func usersFunction(c *gin.Context) {
 func Server(lc fx.Lifecycle) *gin.Engine {
 
 	router := gin.Default()
-	AddGroups(router) // define rules for router
+	addGroups(router) // define rules for router
 
 	srv := &http.Server{Addr: ":8080", Handler: router} // define a web server
 
