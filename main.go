@@ -1,12 +1,13 @@
 package main
 
 import (
-	callorder "hi-supergirl/go-learning-fx/callOrder"
+	integratefxwithzaplogger4 "hi-supergirl/go-learning-fx/IntegrateFxWithZapLogger4"
 )
 
 func main() {
 	//starter1.Main()
 	//starter2.Main()
 	//integratefxwithgin3.Main()
-	callorder.Main()
+	//callorder.Main()
+	integratefxwithzaplogger4.Main()
 }
